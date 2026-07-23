@@ -1,0 +1,247 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Fraunces Variable", Georgia, "Times New Roman", serif;
+  --font-sans: "Manrope Variable", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+
+  --color-paper: #f6f5ef;
+  --color-ink: #0a3128;
+
+  --color-forest-50: #eff8f3;
+  --color-forest-100: #d8eee3;
+  --color-forest-200: #aedcc8;
+  --color-forest-300: #74c3a2;
+  --color-forest-400: #3fa57e;
+  --color-forest-500: #278765;
+  --color-forest-600: #1c6e54;
+  --color-forest-700: #155743;
+  --color-forest-800: #0e4234;
+  --color-forest-900: #0a3128;
+  --color-forest-950: #052019;
+
+  --animate-fade-up: fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-in: fade-in 0.4s ease both;
+  --animate-float: float 4s ease-in-out infinite;
+  --animate-toast-in: toast-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-modal-in: modal-in 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+  --animate-gen-bar: gen-bar 1.1s ease-in-out infinite;
+  --animate-gen-cell: gen-cell 1.9s ease-in-out infinite;
+  --animate-gen-flow: gen-flow 1.7s ease-in-out infinite;
+  --animate-gen-sweep: gen-sweep 1.5s ease-in-out infinite;
+  --animate-gen-ring: gen-ring 2.6s linear infinite;
+  --animate-gen-pulse: gen-pulse 2s ease-in-out infinite;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes shimmer {
+  from {
+    background-position: -400px 0;
+  }
+  to {
+    background-position: 400px 0;
+  }
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* fundal stratificat subtil pentru zona de conținut */
+.app-bg {
+  background:
+    radial-gradient(1000px 400px at 85% -10%, rgba(39, 135, 101, 0.08), transparent 60%),
+    radial-gradient(800px 300px at -10% 0%, rgba(245, 158, 11, 0.06), transparent 55%),
+    var(--color-paper);
+}
+
+.num {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* scrollbar discret */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(10, 49, 40, 0.18);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(10, 49, 40, 0.32);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(10, 49, 40, 0.06) 25%,
+    rgba(10, 49, 40, 0.13) 37%,
+    rgba(10, 49, 40, 0.06) 63%
+  );
+  background-size: 400px 100%;
+  animation: var(--animate-shimmer);
+}
+
+/* ascunde scrollbar-ul nativ al matricei (controlul orizontal e proxy-ul de jos) */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* scrollbar orizontal plutitor, sincronizat cu matricea */
+.hscroll-proxy {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(10, 49, 40, 0.4) transparent;
+}
+.hscroll-proxy::-webkit-scrollbar {
+  height: 8px;
+}
+.hscroll-proxy::-webkit-scrollbar-track {
+  background: transparent;
+}
+.hscroll-proxy::-webkit-scrollbar-thumb {
+  background: rgba(10, 49, 40, 0.32);
+  border-radius: 9999px;
+}
+.hscroll-proxy::-webkit-scrollbar-thumb:hover {
+  background: rgba(10, 49, 40, 0.55);
+}
+
+@keyframes gen-bar {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+@keyframes gen-cell {
+  0% {
+    opacity: 0.12;
+    transform: scale(0.7);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+}
+@keyframes gen-flow {
+  0% {
+    transform: translateX(-6px);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(34px);
+    opacity: 0;
+  }
+}
+@keyframes gen-sweep {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(420%);
+  }
+}
+@keyframes gen-ring {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes gen-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
