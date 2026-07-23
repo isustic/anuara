@@ -657,7 +657,7 @@ function GrupaFilter({
       </button>
 
       {deschis && (
-        <div className="animate-fade-in absolute left-0 top-full z-40 mt-2 w-72 overflow-hidden rounded-2xl border border-forest-100 bg-white shadow-xl">
+        <div className="animate-fade-in absolute right-0 top-full z-40 mt-2 w-72 overflow-hidden rounded-2xl border border-forest-100 bg-white shadow-xl">
           <div className="flex items-center justify-between border-b border-forest-100 px-3.5 py-2.5">
             <span className="text-[11px] font-bold uppercase tracking-wider text-forest-500">
               Filter grupe
