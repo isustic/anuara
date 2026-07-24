@@ -84,9 +84,6 @@ export default function App() {
   const bazaActive = BAZA_CHILDREN.some((c) => c.id === page);
   const activeBaza = BAZA_CHILDREN.find((c) => c.id === page)?.id;
 
-  const toggleBtn =
-    "group/tip relative flex h-8 w-8 items-center justify-center rounded-md text-forest-300 transition-colors duration-150 hover:bg-forest-800 hover:text-amber-300";
-
   return (
     <div className="flex h-full">
       <div
@@ -111,7 +108,7 @@ export default function App() {
                   onClick={() => setExpanded(true)}
                   aria-label="Extinde bara laterală"
                   title="Extinde bara laterală"
-                  className={`${toggleBtn} absolute inset-0 rounded-xl bg-forest-900 text-amber-300 opacity-0 transition-opacity duration-200 hover:bg-forest-800 hover:text-amber-200 group-hover/logo:opacity-100`}
+                  className="group/tip absolute inset-0 flex items-center justify-center rounded-xl bg-forest-900 text-amber-300 opacity-0 transition-opacity duration-200 hover:bg-forest-800 hover:text-amber-200 focus-visible:opacity-100 group-hover/logo:opacity-100"
                 >
                   <PanelLeft size={18} />
                   <ToggleTip pos="left-full top-1/2 ml-3" />
@@ -132,7 +129,7 @@ export default function App() {
                 onClick={() => setExpanded(false)}
                 aria-label="Restrânge bara laterală"
                 title="Restrânge bara laterală"
-                className={`${toggleBtn} ml-auto opacity-0 transition-opacity duration-200 group-hover/sidebar:opacity-100`}
+                className="group/tip relative ml-auto flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-forest-400 transition-all duration-150 hover:bg-forest-800 hover:text-amber-300 active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/40"
               >
                 <PanelLeft size={18} />
                 <ToggleTip pos="right-0 top-full mt-2" />

@@ -34,6 +34,7 @@ import {
   type Report,
 } from "../lib/api";
 import { Spinner, ToastHost, useToasts } from "../components/ui";
+import { ConfirmDeleteModal } from "../components/shared";
 
 const nf = new Intl.NumberFormat("ro-RO", {
   minimumFractionDigits: 2,
@@ -870,6 +871,7 @@ export default function Rapoarte() {
   const [visible, setVisible] = useState(100);
   const [istoric, setIstoric] = useState<RaportSalvat[]>([]);
   const [activId, setActivId] = useState<number | null>(null);
+  const [deSters, setDeSters] = useState<RaportSalvat | null>(null);
   const [istoricSearch, setIstoricSearch] = useState("");
   const [pagina, setPagina] = useState(1);
   const { toasts, push } = useToasts();
@@ -989,6 +991,7 @@ export default function Rapoarte() {
       push("info", "Raport șters din istoric.");
     } catch (e) {
       push("error", e instanceof Error ? e.message : String(e));
+      throw e;
     }
   }
 
@@ -1263,7 +1266,7 @@ export default function Rapoarte() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          sterge(r.id);
+                          setDeSters(r);
                         }}
                         title="Șterge din istoric"
                         className="rounded-lg p-1.5 text-forest-300 opacity-0 transition hover:bg-red-50 hover:text-red-500 group-hover:opacity-100"
@@ -1512,6 +1515,19 @@ export default function Rapoarte() {
             </p>
           </div>
         </div>
+      )}
+
+      {deSters && (
+        <ConfirmDeleteModal
+          title="Ștergi acest raport?"
+          description="Raportul va fi eliminat definitiv din istoric. Fișierele Excel sursă nu sunt afectate."
+          entity={`${deSters.an2} vs ${deSters.an1}`}
+          onConfirm={async () => {
+            await sterge(deSters.id);
+            setDeSters(null);
+          }}
+          onClose={() => setDeSters(null)}
+        />
       )}
 
       <ToastHost toasts={toasts} />

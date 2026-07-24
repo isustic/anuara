@@ -11,7 +11,7 @@ import {
 } from "../lib/api";
 import { PAGE_SIZE, usePaged } from "../lib/usePaged";
 import {
-  ConfirmButton,
+  ConfirmDeleteModal,
   Field,
   Modal,
   Pagination,
@@ -33,6 +33,7 @@ function EditAgentModal({
 }) {
   const [agent, setAgent] = useState(row.agent);
   const [saving, setSaving] = useState(false);
+  const [confirming, setConfirming] = useState(false);
 
   async function save() {
     setSaving(true);
@@ -55,23 +56,26 @@ function EditAgentModal({
       onClose();
     } catch (e) {
       push("error", `Eroare la ștergere: ${e}`);
+      throw e;
     }
   }
 
   return (
+    <>
     <Modal
       title="Editează client"
       icon={<UserCheck size={17} />}
       onClose={onClose}
       footer={
         <>
-          <ConfirmButton
-            onConfirm={del}
-            label="Șterge"
-            confirmLabel="Confirmă ștergerea"
-            icon={<Trash2 size={15} />}
-            className="px-3.5 py-2"
-          />
+          <button
+            type="button"
+            onClick={() => setConfirming(true)}
+            className="flex items-center gap-2 rounded-xl border border-red-200 bg-white px-3.5 py-2 text-sm font-semibold text-red-600 shadow-sm transition hover:border-red-400 hover:bg-red-50 active:scale-[0.98]"
+          >
+            <Trash2 size={15} />
+            Șterge
+          </button>
           <div className="flex gap-2">
             <button
               type="button"
@@ -114,6 +118,16 @@ function EditAgentModal({
         </Field>
       </form>
     </Modal>
+    {confirming && (
+      <ConfirmDeleteModal
+        title="Ștergi acest client?"
+        description="Clientul și asocierea lui cu agentul vor fi eliminate definitiv din fondul de date."
+        entity={row.client}
+        onConfirm={del}
+        onClose={() => setConfirming(false)}
+      />
+    )}
+    </>
   );
 }
 
@@ -121,6 +135,7 @@ export default function Clienti() {
   const [version, setVersion] = useState(0);
   const [busy, setBusy] = useState(false);
   const [editing, setEditing] = useState<AgentClient | null>(null);
+  const [confirmingAll, setConfirmingAll] = useState(false);
   const { toasts, push } = useToasts();
   const p = usePaged<AgentClient>(getAgenti, version);
 
@@ -148,8 +163,10 @@ export default function Clienti() {
       push("success", `${n.toLocaleString("ro-RO")} clienți/agenți șterse.`);
       p.setOffset(0);
       p.reload(p.search, 0);
+      setConfirmingAll(false);
     } catch (e) {
       push("error", `Eroare la ștergere: ${e}`);
+      throw e;
     }
   }
 
@@ -168,12 +185,14 @@ export default function Clienti() {
           </p>
         </div>
         <div className="flex gap-2.5">
-          <ConfirmButton
-            onConfirm={deleteAll}
-            label="Șterge tot"
-            confirmLabel="Confirmă ștergerea"
-            icon={<Trash2 size={16} />}
-          />
+          <button
+            type="button"
+            onClick={() => setConfirmingAll(true)}
+            className="flex items-center gap-2 rounded-xl border border-red-200 bg-white px-4 py-2.5 text-sm font-semibold text-red-600 shadow-sm transition hover:border-red-400 hover:bg-red-50 active:scale-[0.98]"
+          >
+            <Trash2 size={16} />
+            Șterge tot
+          </button>
           <button
             onClick={doImport}
             disabled={busy}
@@ -257,6 +276,17 @@ export default function Clienti() {
           push={push}
           onChanged={() => p.reload(p.search, p.offset)}
           onClose={() => setEditing(null)}
+        />
+      )}
+
+      {confirmingAll && (
+        <ConfirmDeleteModal
+          title="Ștergi toți clienții?"
+          description="Întregul tabel de clienți și agenți va fi golit. Poți reimporta oricând fișierul Excel pentru a-l reconstitui."
+          confirmLabel="Șterge tot"
+          busyLabel="Se golește…"
+          onConfirm={deleteAll}
+          onClose={() => setConfirmingAll(false)}
         />
       )}
 

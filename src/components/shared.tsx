@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
+import { AlertTriangle, ChevronLeft, ChevronRight, Search, Trash2, X } from "lucide-react";
 import { PAGE_SIZE } from "../lib/usePaged";
+import { Spinner } from "./ui";
 
 export const inputCls =
   "w-full rounded-lg border border-forest-200 bg-forest-50/50 px-3 py-2 text-sm text-forest-900 outline-none transition placeholder:text-forest-400 focus:border-forest-500 focus:bg-white focus:ring-2 focus:ring-forest-500/15 disabled:cursor-not-allowed disabled:opacity-60";
@@ -81,47 +82,104 @@ export function Modal({
   );
 }
 
-export function ConfirmButton({
+export function ConfirmDeleteModal({
+  title,
+  description,
+  entity,
+  confirmLabel = "Șterge",
+  busyLabel = "Se șterge…",
   onConfirm,
-  label,
-  confirmLabel,
-  icon,
-  className = "",
+  onClose,
 }: {
-  onConfirm: () => void;
-  label: string;
-  confirmLabel: string;
-  icon?: ReactNode;
-  className?: string;
+  title: string;
+  description: ReactNode;
+  entity?: string;
+  confirmLabel?: string;
+  busyLabel?: string;
+  onConfirm: () => Promise<void> | void;
+  onClose: () => void;
 }) {
-  const [arming, setArming] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  async function confirma() {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await onConfirm();
+    } catch {
+      // eroarea e semnalată de apelant; modalul rămâne deschis
+    } finally {
+      setBusy(false);
+    }
+  }
 
   useEffect(() => {
-    if (!arming) return;
-    const t = setTimeout(() => setArming(false), 3500);
-    return () => clearTimeout(t);
-  }, [arming]);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !busy) onClose();
+      if (e.key === "Enter" && !(e.target instanceof HTMLButtonElement)) confirma();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
 
   return (
-    <button
-      type="button"
-      onClick={() => {
-        if (arming) {
-          setArming(false);
-          onConfirm();
-        } else {
-          setArming(true);
-        }
-      }}
-      className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold shadow-sm transition active:scale-[0.98] ${
-        arming
-          ? "border-red-600 bg-red-600 text-white hover:bg-red-500"
-          : "border-red-200 bg-white text-red-600 hover:border-red-400 hover:bg-red-50"
-      } ${className}`}
+    <div
+      className="animate-fade-in fixed inset-0 z-[60] flex items-center justify-center bg-forest-950/50 p-4 backdrop-blur-sm"
+      onClick={() => !busy && onClose()}
     >
-      {icon}
-      {arming ? confirmLabel : label}
-    </button>
+      <div
+        className="animate-modal-in w-full max-w-sm overflow-hidden rounded-2xl bg-white shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+        role="alertdialog"
+        aria-modal="true"
+      >
+        <div className="h-1.5 bg-gradient-to-r from-red-600 via-red-400 to-amber-400" />
+        <div className="px-6 pb-5 pt-7 text-center">
+          <div className="relative mx-auto flex h-14 w-14 items-center justify-center">
+            <span className="animate-gen-pulse absolute inset-0 rounded-full bg-red-500/15" />
+            <div className="relative flex h-14 w-14 items-center justify-center rounded-full border border-red-100 bg-red-50 text-red-600">
+              <Trash2 size={22} />
+            </div>
+          </div>
+          <h3 className="mt-4 font-display text-xl font-semibold tracking-tight text-forest-950">
+            {title}
+          </h3>
+          <p className="mt-1.5 text-sm leading-relaxed text-forest-600">{description}</p>
+          {entity && (
+            <div className="mt-3.5 inline-flex max-w-full items-center gap-2 rounded-lg border border-red-100 bg-red-50/70 px-3 py-1.5">
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" />
+              <span className="truncate font-mono text-xs font-semibold text-red-700">
+                {entity}
+              </span>
+            </div>
+          )}
+        </div>
+        <div className="flex items-center gap-2 border-t border-forest-100 bg-forest-50/60 px-5 py-3.5">
+          <p className="mr-auto flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-forest-400">
+            <AlertTriangle size={12} className="text-amber-500" />
+            Ireversibil
+          </p>
+          <button
+            type="button"
+            autoFocus
+            onClick={onClose}
+            disabled={busy}
+            className="rounded-xl border border-forest-200 bg-white px-4 py-2 text-sm font-semibold text-forest-700 transition hover:border-forest-400 hover:bg-forest-50 disabled:opacity-50"
+          >
+            Anulează
+          </button>
+          <button
+            type="button"
+            onClick={confirma}
+            disabled={busy}
+            className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-red-500 active:scale-[0.98] disabled:opacity-60"
+          >
+            {busy ? <Spinner /> : <Trash2 size={15} />}
+            {busy ? busyLabel : confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
